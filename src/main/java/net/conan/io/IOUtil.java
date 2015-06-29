@@ -27,7 +27,8 @@ public final class IOUtil {
     private static final Logger LOG = Logger.getLogger("net.conan.io.IOUtil");
 
     /**
-     * Read all content from in and write it to out.
+     * <p>Read all content from in and write it to out.</p>
+     * <p><b>Note that neither stream is closed.</b></p>
      * @throws IllegalStateException if either of the underlying streams throws an
      * IOException
      * @param in InputStream to read from
