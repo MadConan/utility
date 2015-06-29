@@ -15,7 +15,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski
  */
 public class IOUtilTest {
 
