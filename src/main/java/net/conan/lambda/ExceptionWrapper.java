@@ -12,6 +12,24 @@ import java.util.function.Supplier;
  *  but with an added <code>throws Exception</code> clause.  This forces the compiler to
  * create the intermediary instead of the core type, allowing the lambda to be wrapped in a
  * try/catch.</p>
+ * <p>
+ *     Here's an example.  The following code finds all "txt" files in a directory and then merges
+ *     the content into a single "txt" file.
+ *     <pre>
+ *    final PrintWriter writer = ExceptionWrapper.wrapSupplier(
+         () -> new PrintWriter(new FileWriter(dir + File.separatorChar + mergedName))).get();
+
+      ExceptionWrapper.wrapSupplier(() ->
+      Files.list(Paths.get(dir))).get() // Get a Stream
+               .filter(p -> p.toString().endsWith("txt"))               // filter them
+               .map(ExceptionWrapper.wrapFunction(Files::readAllLines)) // map each file to a list of its lines
+               .flatMap(List::stream)                                   // map each list to a stream of each list
+               .forEach(writer::println);                               //  for each stream item, write item to writer
+
+      writer.close();
+ *     </pre>
+ * </p>
+ *
  * @author Conan Dombroski
  */
 public class ExceptionWrapper {
