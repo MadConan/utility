@@ -1,23 +1,31 @@
 package net.conan.io;
 
 import junit.framework.TestCase;
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 /**
  * @author Conan Dombroski (dombroco)
  */
 public class IOUtilTest {
 
-    @Before
-    public void setUp() throws Exception {
+    File testFile;
 
+    @After
+    public void tearDown() throws Exception{
+        if(testFile != null){
+            testFile.delete();
+        }
     }
 
     @Test
@@ -50,5 +58,24 @@ public class IOUtilTest {
             }
         };
         IOUtil.readWrite(in,out);
+    }
+
+    @Test
+    public void testGetFileContent() throws Exception {
+        testFile = new File("test.test");
+
+        Files.write(testFile.toPath(), "This is a test".getBytes(), StandardOpenOption.CREATE);
+        List<String> contents = IOUtil.getFileContent("test.test");
+        TestCase.assertEquals("This is a test", contents.get(0));
+    }
+
+    @Test
+    public void testWriteFile() throws Exception {
+        OutputStream out = new ByteArrayOutputStream(1024);
+        testFile = new File("testWriteFile.txt");
+
+        Files.write(testFile.toPath(), "This is a test".getBytes(), StandardOpenOption.CREATE);
+        IOUtil.writeFile(testFile, out);
+        TestCase.assertEquals("This is a test", out.toString());
     }
 }
