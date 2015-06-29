@@ -11,6 +11,7 @@ import java.util.Map;
 /**
  * @author Conan Dombroski (dombroco)
  */
+@SuppressWarnings("all") // Unit tests don't need warnings.
 public class MapLookupImplTest {
 
     @Test

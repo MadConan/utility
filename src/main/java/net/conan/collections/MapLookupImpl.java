@@ -6,17 +6,17 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
+ * @see net.conan.collections.MapLookup
  * @author Conan Dombroski (dombroco)
  */
 public class MapLookupImpl implements MapLookup {
     @Override
     public <V> List<V> lookup(String regularExpression, Map<String, V> map) {
         final Pattern pattern = Pattern.compile(regularExpression);
-        List<V> values  = map.keySet()
+        return  map.keySet()
               .stream()
               .filter(string -> pattern.matcher(string).matches())
-              .map(s -> map.get(s)).collect(Collectors.toList());
-        return values;
+              .map(map::get).collect(Collectors.toList());
     }
 }
 
