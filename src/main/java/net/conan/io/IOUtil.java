@@ -27,8 +27,13 @@ public final class IOUtil {
     private static final Logger LOG = Logger.getLogger("net.conan.io.IOUtil");
 
     /**
-     * <p>Read all content from in and write it to out.</p>
+     * <p>Read all content from in and write it to out.  It {@link InputStream#read(byte[]) reads} up
+     * to the size of the byte array and then {@link OutputStream#write(byte[],int,int) writes} the
+     * byte array to out.  This will allow any amount of data to be streamed.</p>
      * <p><b>Note that neither stream is closed.</b></p>
+     *
+     * @see InputStream
+     * @see OutputStream
      * @throws IllegalStateException if either of the underlying streams throws an
      * IOException
      * @param in InputStream to read from
