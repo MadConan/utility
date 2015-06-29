@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -77,7 +78,7 @@ public final class IOUtil {
         }catch (IOException e){
             // This should only happen on a InputStream.close()
             // Just dump the stack and continue.
-            LOG.warning("Exception during InputStream.close(): " + e.getMessage());
+            LOG.log(Level.WARNING,"Exception during InputStream.close(): " + e.getMessage(),e);
         }
         return byteCount;
     }

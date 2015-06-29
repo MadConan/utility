@@ -17,6 +17,7 @@ import java.util.List;
 /**
  * @author Conan Dombroski
  */
+@SuppressWarnings("all")
 public class IOUtilTest {
 
     File testFile;
