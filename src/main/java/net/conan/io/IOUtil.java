@@ -1,9 +1,11 @@
 package net.conan.io;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,12 +53,38 @@ public final class IOUtil {
     /**
      * Convenience method to eliminate the need for a try-catch around {@link Files#readAllLines(Path)}.
      *
+     * @see #getContent(Path)
+     * @see #getFileContent(File)
      * @param fileName Name of file to read.
      * @return List of Strings that is the file content.
      */
     public static List<String> getFileContent(String fileName){
+        return getContent(Paths.get(fileName));
+    }
+
+    /**
+     * Convenience method to eliminate the need for a try-catch around {@link Files#readAllLines(Path)}.
+     *
+     * @see #getFileContent(String)
+     * @see #getContent(Path)
+     * @param f File to read.
+     * @return List of Strings that is the file content.
+     */
+    public static List<String> getFileContent(File f){
+        return getContent(f.toPath());
+    }
+
+    /**
+     * Convenience method to eliminate the need for a try-catch around {@link Files#readAllLines(Path)}.
+     *
+     * @see #getFileContent(File)
+     * @see #getFileContent(String)
+     * @param path Path to file
+     * @return List of Strings that is the file content.
+     */
+    public static List<String> getContent(Path path){
         try{
-            return Files.readAllLines(Paths.get(fileName));
+            return Files.readAllLines(path);
         }catch (IOException e){
             throw new IllegalStateException(e);
         }
@@ -69,12 +97,26 @@ public final class IOUtil {
      * @param out OutputStream to write file content to
      * @return total number of bytes read/written
      */
-    public static long writeFile(File f, OutputStream out){
+    public static long writeFileToStream(File f, OutputStream out){
         long byteCount = 0;
         try(InputStream in = new BufferedInputStream(new FileInputStream(f))) {
             byteCount = IOUtil.readWrite(in,out);
         }catch (FileNotFoundException e){
-            throw new IllegalStateException("Failed to create or close input stream for " + f,e);
+            throw new IllegalStateException("File not found: " + f,e);
+        }catch (IOException e){
+            // This should only happen on a InputStream.close()
+            // Just dump the stack and continue.
+            LOG.log(Level.WARNING,"Exception during InputStream.close(): " + e.getMessage(),e);
+        }
+        return byteCount;
+    }
+
+    public static long writeStreamToFile(File f, InputStream in){
+        long byteCount = 0;
+        try(OutputStream out = new BufferedOutputStream(new FileOutputStream(f),BUFFER_SIZE)){
+            byteCount = IOUtil.readWrite(in,out);
+        }catch (FileNotFoundException e){
+            throw new IllegalStateException("File not found: " + f,e);
         }catch (IOException e){
             // This should only happen on a InputStream.close()
             // Just dump the stack and continue.

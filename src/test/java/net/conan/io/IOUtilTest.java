@@ -31,10 +31,11 @@ public class IOUtilTest {
 
     @Test
     public void testReadWrite() throws Exception {
-        ByteArrayInputStream in = new ByteArrayInputStream("This is a test".getBytes());
+        ByteArrayInputStream in = new ByteArrayInputStream(testString().getBytes());
         ByteArrayOutputStream out = new ByteArrayOutputStream(500);
-        IOUtil.readWrite(in,out);
-        TestCase.assertEquals("This is a test",out.toString());
+        long count = IOUtil.readWrite(in,out);
+        TestCase.assertEquals(testString(),out.toString());
+        TestCase.assertEquals(testString().getBytes().length,count);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -51,7 +52,7 @@ public class IOUtilTest {
 
     @Test(expected = IllegalStateException.class)
     public void testReadWriteFailOnWrite() throws Exception {
-        InputStream in = new ByteArrayInputStream("test".getBytes());
+        InputStream in = new ByteArrayInputStream(testString().getBytes());
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
@@ -64,10 +65,9 @@ public class IOUtilTest {
     @Test
     public void testGetFileContent() throws Exception {
         testFile = new File("test.test");
-
-        Files.write(testFile.toPath(), "This is a test".getBytes(), StandardOpenOption.CREATE);
+        Files.write(testFile.toPath(),testString().getBytes(), StandardOpenOption.CREATE);
         List<String> contents = IOUtil.getFileContent("test.test");
-        TestCase.assertEquals("This is a test", contents.get(0));
+        TestCase.assertEquals(testString(), contents.get(0));
     }
 
     @Test
@@ -75,8 +75,75 @@ public class IOUtilTest {
         OutputStream out = new ByteArrayOutputStream(1024);
         testFile = new File("testWriteFile.txt");
 
-        Files.write(testFile.toPath(), "This is a test".getBytes(), StandardOpenOption.CREATE);
-        IOUtil.writeFile(testFile, out);
-        TestCase.assertEquals("This is a test", out.toString());
+        Files.write(testFile.toPath(),testString().getBytes(), StandardOpenOption.CREATE);
+        long count = IOUtil.writeFileToStream(testFile, out);
+        TestCase.assertEquals(testString(), out.toString());
+        TestCase.assertEquals(testString().getBytes().length,count);
     }
+
+    @Test
+    public void testWriteStreamToFile() throws Exception{
+        testFile = new File("testWriteStreamToFile.test");
+        InputStream in = new ByteArrayInputStream(testString().getBytes());
+        long count = IOUtil.writeStreamToFile(testFile,in);
+        List<String> content = Files.readAllLines(testFile.toPath());
+        TestCase.assertEquals(testString(),content.get(0));
+        TestCase.assertEquals(testString().getBytes().length,count);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testGetFileContentBadFileName() throws Exception {
+        IOUtil.getFileContent("great koogaly moogaly");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testGetFileContentBadFile() throws Exception {
+        IOUtil.getFileContent(new File("no file 999 "));
+    }
+
+    @Test
+    public void testWriteFileToStreamFailOnClose() throws Exception {
+        testFile = new File("testwftsfoc.test");
+
+        Files.write(testFile.toPath(), testString().getBytes(), StandardOpenOption.CREATE);
+        OutputStream out = new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+            }
+            @Override
+            public void close() throws IOException{
+                throw new IOException("TEST");
+            }
+        };
+        long count = IOUtil.writeFileToStream(testFile,out);
+        TestCase.assertEquals(testString().getBytes().length,count);
+    }
+
+    @Test
+    public void testWriteStreamToFileFailOnClose() throws Exception {
+        testFile = new File("testwstffoc.test");
+        InputStream in = new InputStream(){
+            int readCount = 0;
+
+            @Override
+            public int read() throws IOException {
+                if(readCount >= 99)
+                    return -1;
+                readCount++;
+                return 'x';
+            }
+
+            @Override
+            public void close() throws IOException {
+                throw new IOException("TEST");
+            }
+        };
+        long count = IOUtil.writeStreamToFile(testFile,in);
+        TestCase.assertEquals(99,count);
+    }
+
+    private String testString(){
+        return "This is a test";
+    }
+
 }
