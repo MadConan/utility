@@ -11,5 +11,5 @@ function randomInt(){
         min = temp;
     }
 
-    var x = Math.floor(Math.random() * (max - min + 1)) + 1;
+    return Math.floor(Math.random() * (max - min + 1)) + 1;
 }
