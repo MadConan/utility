@@ -1,0 +1,158 @@
+package net.conan.file;
+
+import junit.framework.TestCase;
+import net.conan.io.IOUtil;
+import net.conan.lambda.ExceptionWrapper;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
+
+/**
+ * @author Conan Dombroski (dombroco)
+ */
+@SuppressWarnings("all")
+public class ZipFileCombinerTest {
+
+    File archiveOne = new File("./target/zipCombinerTest-one.zip");
+    File archiveTwo = new File("./target/zipCombinerTest-two.zip");
+    File archiveThree = new File("./target/zfct1.jar");
+    File archiveFour = new File("./target/zfct2.jar");
+
+    List<File> archiveOneFiles = Arrays.asList(new File("./target/temp1.txt"),new File("./target/temp2.txt"));
+    List<File> archiveTwoFiles = Arrays.asList(new File("./target/temp3.txt"),new File("./target/temp4.txt"));
+
+    @Before
+    public void setUp() throws Exception {
+
+        archiveOneFiles.forEach(ExceptionWrapper.wrapConsumer(this::createTempFile));
+        archiveTwoFiles.forEach(ExceptionWrapper.wrapConsumer(this::createTempFile));
+
+        createJarArchive(archiveThree, "stringIncrementer.jar");
+        createJarArchive(archiveFour, "zfcTestArchive.jar");
+
+        createArchive(archiveOne, archiveOneFiles);
+        createArchive(archiveTwo, archiveTwoFiles);
+    }
+
+    @After
+    public void tearDown() throws Exception{
+        archiveOne.delete();
+        archiveTwo.delete();
+        archiveThree.delete();
+        archiveFour.delete();
+        archiveOneFiles.forEach(File::delete);
+        archiveTwoFiles.forEach(File::delete);
+    }
+
+    @Test
+    public void testCombine() throws Exception {
+        File target = new File("./target/testCombine-target.zip");
+        try {
+            FileCombiner combiner = new ZipFileCombiner();
+            File f = combiner.combine(Arrays.asList(archiveOne, archiveTwo), target);
+            TestCase.assertTrue(f.length() > 0);
+            ZipFile file = new ZipFile(f);
+            ZipEntry entry = file.getEntry("temp1.txt");
+            TestCase.assertNotNull("No entry found for 'temp1.txt'", entry);
+            TestCase.assertTrue(entry.getSize() > 0);
+        }finally {
+            target.delete();
+        }
+    }
+
+    @Test
+    public void testJarFileManifestCollision() throws Exception {
+        File target = new File("./target/testJarFileManifestCollision-target.zip");
+        try {
+            FileCombiner combiner = new ZipFileCombiner();
+            File f = combiner.combine(Arrays.asList(archiveThree, archiveFour), target);
+            TestCase.assertTrue("File was too small: " + f.length(), f.length() > 1 << 5);
+            ZipFile zipFile = new ZipFile(f);
+            ZipEntry entry = zipFile.getEntry("com/vertafore/fakedata/util/datagen/Incrementer.class");
+            TestCase.assertNotNull("Entry was null", entry);
+        }finally {
+            //target.delete();
+        }
+    }
+
+    private void createTempFile(File f) throws Exception{
+        try(PrintWriter out = new PrintWriter(new FileWriter(f))){
+            out.println("This is a temp file for testing\nZipFileCombiner.java");
+        }
+    }
+
+    static final int BUFFER = 2048;
+    private void zip (String argv[]) {
+        try {
+            BufferedInputStream origin = null;
+            FileOutputStream dest = new
+                  FileOutputStream("c:\\zip\\myfigs.zip");
+            ZipOutputStream out = new ZipOutputStream(new
+                  BufferedOutputStream(dest));
+            //out.setMethod(ZipOutputStream.DEFLATED);
+            byte data[] = new byte[BUFFER];
+            // get a list of files from current directory
+            File f = new File(".");
+            String files[] = f.list();
+
+            for (int i=0; i<files.length; i++) {
+                System.out.println("Adding: "+files[i]);
+                FileInputStream fi = new
+                      FileInputStream(files[i]);
+                origin = new
+                      BufferedInputStream(fi, BUFFER);
+                ZipEntry entry = new ZipEntry(files[i]);
+                out.putNextEntry(entry);
+                int count;
+                while((count = origin.read(data, 0,
+                      BUFFER)) != -1) {
+                    out.write(data, 0, count);
+                }
+                origin.close();
+            }
+            out.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createArchive(File archive, List<File> files) throws Exception{
+        try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(archive))){
+            files.forEach(ExceptionWrapper.wrapConsumer(this::createTempFile));
+            files.forEach(ExceptionWrapper.wrapConsumer(f -> this.addFileToArchive(f, out)));
+        }
+    }
+
+    private void addFileToArchive(File f, ZipOutputStream out) throws Exception{
+        try(InputStream in = new BufferedInputStream(new FileInputStream(f))){
+            ZipEntry entry = new ZipEntry(f.getName());
+            out.putNextEntry(entry);
+            IOUtil.readWrite(in, out);
+        }
+    }
+
+    private void createJarArchive(File target, String resource) throws Exception{
+        try(InputStream in =
+                  Thread.currentThread()
+                        .getContextClassLoader()
+                        .getResourceAsStream(resource);
+            OutputStream out = new FileOutputStream(target)){
+            IOUtil.readWrite(in,out);
+        }
+    }
+}
