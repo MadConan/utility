@@ -15,20 +15,20 @@ public class TextFileCombiner implements FileCombiner {
 
     private static final String LINE_FEED = System.getProperty("line.separator");
 
-    private final String contentSeperator;
+    private final String contentSeparator;
 
     public TextFileCombiner(){
         this("");
     }
 
     public TextFileCombiner(String contentDelimLine){
-        contentSeperator = contentDelimLine + LINE_FEED;
+        contentSeparator = contentDelimLine + LINE_FEED;
     }
 
     @Override
     public File combine(List<File> files, File target) {
         try{
-            final byte[] contentSeparationBytes = contentSeperator.getBytes();
+            final byte[] contentSeparationBytes = contentSeparator.getBytes();
             final FileChannel out = FileChannel.open(target.toPath(),StandardOpenOption.CREATE,StandardOpenOption.WRITE);
             files.stream().forEach(
                   ExceptionWrapper.wrapConsumer(
