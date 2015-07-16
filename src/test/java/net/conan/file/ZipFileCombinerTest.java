@@ -1,6 +1,7 @@
 package net.conan.file;
 
 import junit.framework.TestCase;
+import net.conan.file.ZipFileCombiner.CollisionStrategy;
 import net.conan.io.IOUtil;
 import net.conan.lambda.ExceptionWrapper;
 import org.junit.After;
@@ -76,58 +77,68 @@ public class ZipFileCombinerTest {
     }
 
     @Test
-    public void testJarFileManifestCollision() throws Exception {
-        File target = new File("./target/testJarFileManifestCollision-target.zip");
+    public void testRenameAndAddStrategy() throws Exception {
+        File target = new File("./target/testRenameAndAddStrategy-target.zip");
         try {
             FileCombiner combiner = new ZipFileCombiner();
             File f = combiner.combine(Arrays.asList(archiveThree, archiveFour), target);
             TestCase.assertTrue("File was too small: " + f.length(), f.length() > 1 << 5);
             ZipFile zipFile = new ZipFile(f);
-            ZipEntry entry = zipFile.getEntry("com/vertafore/fakedata/util/datagen/Incrementer.class");
-            TestCase.assertNotNull("Entry was null", entry);
+            final int[] count = {0};
+            zipFile.stream().forEach(entry -> {
+                if (entry.getName().matches("META-INF/.*?MANIFEST.*?")) {
+                    count[0]++;
+                }
+            });
+            TestCase.assertEquals(2, count[0]);
         }finally {
-            //target.delete();
+            target.delete();
+        }
+    }
+
+    @Test
+    public void testUseFirstStrategy() throws Exception {
+        File target = new File("./target/testUseFirstStrategy-target.zip");
+        try {
+            FileCombiner combiner = new ZipFileCombiner(CollisionStrategy.USE_FIRST);
+            File f = combiner.combine(Arrays.asList(archiveThree, archiveFour), target);
+            TestCase.assertTrue("File was too small: " + f.length(), f.length() > 1 << 5);
+            ZipFile zipFile = new ZipFile(f);
+            final int[] count = {0};
+            zipFile.stream().forEach(entry -> {
+                if(entry.getName().matches("META-INF/.*?MANIFEST.*?")){
+                    count[0]++;
+                }
+            });
+            TestCase.assertEquals(1, count[0]);
+        }finally {
+            target.delete();
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testFailStrategy() throws Exception {
+        File target = new File("./target/testFailStrategy-target.zip");
+        try {
+            FileCombiner combiner = new ZipFileCombiner(CollisionStrategy.FAIL);
+            File f = combiner.combine(Arrays.asList(archiveThree, archiveFour), target);
+            TestCase.assertTrue("File was too small: " + f.length(), f.length() > 1 << 5);
+            ZipFile zipFile = new ZipFile(f);
+            final int[] count = {0};
+            zipFile.stream().forEach(entry -> {
+                if(entry.getName().matches("META-INF/.*?MANIFEST.*?")){
+                    count[0]++;
+                }
+            });
+            TestCase.assertEquals(0, count[0]);
+        }finally {
+            target.delete();
         }
     }
 
     private void createTempFile(File f) throws Exception{
         try(PrintWriter out = new PrintWriter(new FileWriter(f))){
             out.println("This is a temp file for testing\nZipFileCombiner.java");
-        }
-    }
-
-    static final int BUFFER = 2048;
-    private void zip (String argv[]) {
-        try {
-            BufferedInputStream origin = null;
-            FileOutputStream dest = new
-                  FileOutputStream("c:\\zip\\myfigs.zip");
-            ZipOutputStream out = new ZipOutputStream(new
-                  BufferedOutputStream(dest));
-            //out.setMethod(ZipOutputStream.DEFLATED);
-            byte data[] = new byte[BUFFER];
-            // get a list of files from current directory
-            File f = new File(".");
-            String files[] = f.list();
-
-            for (int i=0; i<files.length; i++) {
-                System.out.println("Adding: "+files[i]);
-                FileInputStream fi = new
-                      FileInputStream(files[i]);
-                origin = new
-                      BufferedInputStream(fi, BUFFER);
-                ZipEntry entry = new ZipEntry(files[i]);
-                out.putNextEntry(entry);
-                int count;
-                while((count = origin.read(data, 0,
-                      BUFFER)) != -1) {
-                    out.write(data, 0, count);
-                }
-                origin.close();
-            }
-            out.close();
-        } catch(Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -155,4 +166,41 @@ public class ZipFileCombinerTest {
             IOUtil.readWrite(in,out);
         }
     }
+
+    // THE FOLLOWING FIELD AND METHOD EXIST AS EXAMPLE CODE ONLY
+    static final int BUFFER = 2048;
+    private void zip (String argv[]) {
+        try {
+            BufferedInputStream origin = null;
+            FileOutputStream dest = new
+                  FileOutputStream("c:\\zip\\myfigs.zip");
+            ZipOutputStream out = new ZipOutputStream(new
+                  BufferedOutputStream(dest));
+
+            byte data[] = new byte[BUFFER];
+
+            File f = new File(".");
+            String files[] = f.list();
+
+            for (int i=0; i<files.length; i++) {
+                System.out.println("Adding: "+files[i]);
+                FileInputStream fi = new
+                      FileInputStream(files[i]);
+                origin = new
+                      BufferedInputStream(fi, BUFFER);
+                ZipEntry entry = new ZipEntry(files[i]);
+                out.putNextEntry(entry);
+                int count;
+                while((count = origin.read(data, 0,
+                      BUFFER)) != -1) {
+                    out.write(data, 0, count);
+                }
+                origin.close();
+            }
+            out.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    // END EXAMPLE CODE
 }
