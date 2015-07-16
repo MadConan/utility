@@ -116,9 +116,6 @@ public class ZipFileCombiner implements FileCombiner {
         }catch (IOException e){
             // Only on close event, so ignore it
             e.printStackTrace();
-        }catch (RuntimeException e){
-            target.delete();
-            throw e;
         }
         return target;
     }
