@@ -136,6 +136,15 @@ public class ZipFileCombinerTest {
         }
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testFileNotAZipFile() throws Exception {
+        File f1 = new File("./target/testFileNotAZipFile.txt");
+        File f2 = new File("./target/testFileNotZip-target.zip");
+        createTempFile(f1);
+        FileCombiner fc = new ZipFileCombiner();
+        fc.combine(Arrays.asList(f1),f2);
+    }
+
     private void createTempFile(File f) throws Exception{
         try(PrintWriter out = new PrintWriter(new FileWriter(f))){
             out.println("This is a temp file for testing\nZipFileCombiner.java");
