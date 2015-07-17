@@ -10,6 +10,6 @@ import java.util.Map;
  *
  * @author Conan Dombroski (dombroco)
  */
-public interface MapLookup {
-    <V> List<V> lookup(String regularExpression, Map<String,V> map);
+public interface MapLookup<K,V> {
+    List<V> lookup(String regularExpression, Map<K,V> map);
 }
