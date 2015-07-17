@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  * @see net.conan.collections.MapLookup
  * @author Conan Dombroski (dombroco)
  */
-public class StringKeysLookup<V> implements MapLookup <String,V>  {
+public class StringKeysLookup<V> implements MapLookup <String,String,V>  {
 
     @Override
     public List<V> lookup(String regularExpression, Map<String, V> map) {

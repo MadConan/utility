@@ -5,11 +5,11 @@ import java.util.Map;
 
 /**
  *
- * Provides a mechanism to search {@link Map Map&lt;String&gt;} keys with
- * regular expression and return the corresponding map values as a List.
+ * Provides a mechanism to search {@link Map} keys with
+ * a given criteria and return the corresponding map values as a List.
  *
  * @author Conan Dombroski (dombroco)
  */
-public interface MapLookup<K,V> {
-    List<V> lookup(String regularExpression, Map<K,V> map);
+public interface MapLookup<S,K,V> {
+    List<V> lookup(S searchCriteria, Map<K,V> map);
 }
