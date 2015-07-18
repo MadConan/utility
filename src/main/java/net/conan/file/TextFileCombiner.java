@@ -9,6 +9,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
+ * Combines text files into a single file.
+ *
  * @author Conan Dombroski (dombroco)
  */
 public class TextFileCombiner implements FileCombiner {
@@ -17,14 +19,36 @@ public class TextFileCombiner implements FileCombiner {
 
     private final String contentSeparator;
 
+    /**
+     * Create a new TextFileCombiner using no delimter.
+     *
+     * @see #TextFileCombiner(String)
+     */
     public TextFileCombiner(){
         this("");
     }
 
+    /**
+     * Create new TextFileCombiner with the given delimiter.
+     *
+     * @param contentDelimLine Delimiter used to separate individual file content within
+     *                         the combined file.
+     */
     public TextFileCombiner(String contentDelimLine){
         contentSeparator = contentDelimLine + LINE_FEED;
     }
 
+    /**
+     * Combine all files into one.  This is a very simplistic implementation as it does not
+     * attempt to verify any content.  This method assumes all Files within the list are
+     * valid text files and also assumes the system's default encoding. Mixed encodings will
+     * have unpredictable results in the file merged File.
+     *
+     * @see File
+     * @param files List of Files to merge
+     * @param target merge destination
+     * @return The target.
+     */
     @Override
     public File combine(List<File> files, File target) {
         try{
