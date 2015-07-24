@@ -112,6 +112,7 @@ public class ZipFileCombiner implements FileCombiner {
 
     @Override
     public File combine(List<File> files, File target) {
+        // This Set is used to detect duplicate entries.
         final Set<String> entryNames = new TreeSet<>();
 
         try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(target))){
