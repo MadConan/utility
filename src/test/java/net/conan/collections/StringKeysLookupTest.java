@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 @SuppressWarnings("all") // Unit tests don't need warnings.
 public class StringKeysLookupTest {

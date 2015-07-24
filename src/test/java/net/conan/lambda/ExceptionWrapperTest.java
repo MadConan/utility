@@ -3,7 +3,7 @@ package net.conan.lambda;
 import org.junit.Test;
 
 /**
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class ExceptionWrapperTest {
 

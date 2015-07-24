@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 /**
  * @see net.conan.collections.MapLookup
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class StringKeysLookup<V> implements MapLookup <String,String,V>  {
 

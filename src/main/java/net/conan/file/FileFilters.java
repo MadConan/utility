@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * {@link FileFilter} using a String or {@link Pattern}.</p>
  *
  * <p>All methods do full matching on the {@link File#getName() file name}</p>
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class FileFilters {
 

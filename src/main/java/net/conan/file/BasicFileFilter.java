@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  *     No other path information is used.</li>
  *     <li>Full matching with {@link Pattern} is used.  ie: </li>
  * </ul>
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class BasicFileFilter implements FileFilter, FilenameFilter{
     private final Pattern pattern;

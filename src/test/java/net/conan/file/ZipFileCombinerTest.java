@@ -24,7 +24,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 @SuppressWarnings("all")
 public class ZipFileCombinerTest {

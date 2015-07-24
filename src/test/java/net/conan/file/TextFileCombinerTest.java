@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class TextFileCombinerTest {
 

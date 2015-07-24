@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.io.File;
 
 /**
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class FileFiltersTest {
 

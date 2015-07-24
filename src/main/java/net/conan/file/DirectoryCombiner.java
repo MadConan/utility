@@ -13,7 +13,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 /**
  * EXPERIMENTAL
  *
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class DirectoryCombiner implements FileCombiner {
 

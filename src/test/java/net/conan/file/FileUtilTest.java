@@ -16,7 +16,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class FileUtilTest {
     final List<String> strings = Arrays.asList(

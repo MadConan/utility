@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.regex.Pattern;
 
 /**
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class BasicFileFilterTest {
 

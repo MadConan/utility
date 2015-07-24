@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Combines text files into a single file.
  *
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski ()
  */
 public class TextFileCombiner implements FileCombiner {
 
