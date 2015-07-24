@@ -43,7 +43,7 @@ public class ZipFileCombinerTest {
         archiveOneFiles.forEach(ExceptionWrapper.wrapConsumer(this::createTempFile));
         archiveTwoFiles.forEach(ExceptionWrapper.wrapConsumer(this::createTempFile));
 
-        createJarArchive(archiveThree, "stringIncrementer.jar");
+        createJarArchive(archiveThree, "zfcTestArchive2.jar");
         createJarArchive(archiveFour, "zfcTestArchive.jar");
 
         createArchive(archiveOne, archiveOneFiles);
