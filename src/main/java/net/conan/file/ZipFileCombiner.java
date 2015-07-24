@@ -47,7 +47,7 @@ import java.util.zip.ZipOutputStream;
  *
  * @see java.util.zip.ZipFile
  * @see File
- * @author Conan Dombroski (dombroco)
+ * @author Conan Dombroski 
  */
 public class ZipFileCombiner implements FileCombiner {
 
