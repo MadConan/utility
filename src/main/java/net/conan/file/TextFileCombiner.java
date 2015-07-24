@@ -52,14 +52,16 @@ public class TextFileCombiner implements FileCombiner {
     @Override
     public File combine(List<File> files, File target) {
         try{
-            final byte[] contentSeparationBytes = contentSeparator.getBytes();
+            final ByteBuffer separatorByteBuffer = ByteBuffer.wrap(contentSeparator.getBytes());
             final FileChannel out = FileChannel.open(target.toPath(),StandardOpenOption.CREATE,StandardOpenOption.WRITE);
             files.stream().forEach(
                   ExceptionWrapper.wrapConsumer(
                         f -> {
-                            FileChannel.open(f.toPath(), StandardOpenOption.READ)
-                                  .transferTo(0, f.length(), out);
-                            out.write(ByteBuffer.wrap(contentSeparationBytes));
+                            FileChannel in = FileChannel.open(f.toPath(), StandardOpenOption.READ);
+                            in.transferTo(0, f.length(), out);
+                            out.write(separatorByteBuffer);
+                            separatorByteBuffer.rewind();
+                            in.close();
                         }));
         }catch (Exception e){
             throw new IllegalStateException(e);
