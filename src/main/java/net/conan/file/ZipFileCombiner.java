@@ -37,10 +37,13 @@ import java.util.zip.ZipOutputStream;
  *  <ul><li><code>FAIL:</code>  Stop processing (throwing IllegalStateException) if a collision occurs.</li>
  *  <li><code>USE_FIRST:</code>  Any duplicates are ignored.  Only the first entry found with the name is used.</li>
  *  <li><code>RENAME_AND_ADD:</code>  An attempt is made to rename the entry based on the archive name and
- *                     entry name.</li></ul></p>
- *
- * <p>No attempt is made to determine version or age of any entry, so the behavior may not fit with
- * all cases.</p>
+ *                     entry name.</li></ul>
+ *  These strategies only apply to non-directories.  Collisions for directory entries are ignored.
+ *  It is assumed that combining two archives with the same directory entries would be equivalent
+ *  to having created a single archive from those directories in the first place.
+ * </p>
+ * <p>No attempt is made to determine version or age of any entry, so the behavior described here may not fit with
+ * all use cases.</p>
  *
  * @see java.util.zip.ZipFile
  * @see File
@@ -152,6 +155,10 @@ public class ZipFileCombiner implements FileCombiner {
         return ExceptionWrapper.wrapSupplier(() -> new ZipFile(f)).get();
     }
 
+    /*
+    CombinerBean is used in the CollisionStrategy.  It only serves to clean up code such that long arg lists
+    aren't necessary.
+     */
     private static class CombinerBean{
         private final ZipEntry e;
         private final ZipFile src;
