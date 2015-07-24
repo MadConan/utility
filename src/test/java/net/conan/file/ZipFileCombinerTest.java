@@ -138,11 +138,17 @@ public class ZipFileCombinerTest {
 
     @Test(expected = IllegalStateException.class)
     public void testFileNotAZipFile() throws Exception {
+
         File f1 = new File("./target/testFileNotAZipFile.txt");
         File f2 = new File("./target/testFileNotZip-target.zip");
-        createTempFile(f1);
-        FileCombiner fc = new ZipFileCombiner();
-        fc.combine(Arrays.asList(f1),f2);
+        try {
+            createTempFile(f1);
+            FileCombiner fc = new ZipFileCombiner();
+            fc.combine(Arrays.asList(f1), f2);
+        }finally {
+            f1.delete();
+            f2.delete();
+        }
     }
 
     private void createTempFile(File f) throws Exception{

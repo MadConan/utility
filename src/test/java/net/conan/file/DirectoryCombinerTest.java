@@ -54,6 +54,7 @@ public class DirectoryCombinerTest {
         if(target != null) {
             FileUtil.deleteRecursively(target.toPath());
         }
+        FileUtil.deleteRecursively(new File(strings.get(0)).toPath());
     }
 
     @Test
@@ -67,7 +68,7 @@ public class DirectoryCombinerTest {
         TestCase.assertEquals("Number of directories was incorrect",1,dirCount);
         pathStream = StreamSupport.stream(Files.newDirectoryStream(f.toPath()).spliterator(),false);
         long filesCount = pathStream.filter(p -> !Files.isDirectory(p)).count();
-        TestCase.assertEquals("Number of files was incorrect",2,filesCount);
+        TestCase.assertEquals("Number of files was incorrect", 2, filesCount);
     }
 
     @Test

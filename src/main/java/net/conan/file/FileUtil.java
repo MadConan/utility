@@ -3,8 +3,11 @@ package net.conan.file;
 import net.conan.lambda.ExceptionWrapper;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * @author Conan Dombroski (dombroco)
@@ -32,5 +35,13 @@ public class FileUtil {
             sum+=countAll(file);
         }
         return sum;
+    }
+
+    public static void forAllLines(File target, Consumer<String> consumeLine){
+        try(Stream<String> lineStream = Files.lines(target.toPath())){
+            lineStream.forEach(consumeLine);
+        }catch (IOException e){
+            throw new IllegalStateException("Failed to create the stream or read from " + target + " due to " + e.getMessage(),e);
+        }
     }
 }

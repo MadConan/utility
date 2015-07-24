@@ -1,12 +1,14 @@
 package net.conan.file;
 
 import junit.framework.TestCase;
+import net.conan.lambda.ExceptionWrapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -59,12 +61,37 @@ public class FileUtilTest {
         TestCase.assertEquals("Wrong number: " + val,newList.size()-1,val);
     }
 
+    @Test
+    public void testForAllLines() throws Exception {
+        target = createTempFile("./target/testForAllLines.txt");
+        final int[] counter = {0};
+        FileUtil.forAllLines(target,s -> counter[0]+=s.length());
+        TestCase.assertTrue(counter[0] > 10);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testForAllLinesFailure() throws Exception {
+        target = createTempFile("./target/testFail.txt");
+        FileUtil.forAllLines(target, ExceptionWrapper.wrapConsumer(
+              s -> {
+                  throw new IOException("TEST FAIL");
+              }
+        ));
+    }
+
+    private File createTempFile(String name){
+        File f = new File(name);
+        createTempFile(f);
+        return f;
+    }
+
     private void createTempFile(File f) {
         f.getParentFile().mkdirs();
         try(PrintWriter out = new PrintWriter(new FileWriter(f))){
             Random r = new Random();
             out.println("This is a temp file for testing\nFileUtilTest.java\nRandom number = " + r.nextInt() +
                   "\nRandom long=" + r.nextLong());
+
         }catch (Exception e){
             throw new IllegalStateException(e);
         }
