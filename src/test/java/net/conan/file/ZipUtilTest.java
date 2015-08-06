@@ -29,6 +29,6 @@ public class ZipUtilTest {
     @Test
     public void testGetEntryAsString() throws Exception {
         String content = ZipUtil.getEntryAsString("ldapinfo.txt",new File("textFiles.zip"));
-        TestCase.assertEquals(content + " is not the right length", 37,content.length());
+        TestCase.assertEquals(content + " is not the right length", 294,content.length());
     }
 }
